@@ -5,7 +5,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // 從GitHub拉取代碼
-                git url: 'https://github.com/你的使用者名稱/你的儲存庫名稱.git', branch: 'main'
+                git url: 'https://github.com/sabreruz/test.git', branch: 'main'
             }
         }
         
