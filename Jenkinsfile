@@ -1,23 +1,56 @@
-pipeline{
+pipeline {
     agent any
-    stages{
-        stage("first"){
+    
+    stages {
+        stage('Checkout') {
             steps {
-                echo 'hello world'
+                // 從GitHub拉取代碼
+                git url: 'https://github.com/你的使用者名稱/你的儲存庫名稱.git', branch: 'main'
             }
         }
-        stage("run test"){
+        
+        stage('Install Frontend Dependencies') {
             steps {
-                echo 'run test'
-                withEnv(['JENKINS_NODE_COOKIE=dontKillMe']) {
-                    bat "start /B C:/gittest/test/Application/KeyboardWarIII.exe"
+                dir('frontend') {
+                    // 安裝前端依賴
+                    bat 'npm install'
                 }
             }
         }
+        
+        stage('Start Services') {
+            steps {
+                // 使用環境變數防止Jenkins終止子進程
+                withEnv(['JENKINS_NODE_COOKIE=dontKillMe']) {
+                    parallel(
+                        frontend: {
+                            dir('frontend') {
+                                bat 'start /B npm run dev'
+                                echo "前端服務已啟動"
+                            }
+                        },
+                        backend: {
+                            dir('backend') {
+                                bat 'start /B scripts/run-backend-pip.bat'
+                                echo "後端服務已啟動"
+                            }
+                        }
+                    )
+                }
+                
+                // 等待一段時間確保服務啟動
+                sleep(time: 30, unit: 'SECONDS')
+                echo "前端和後端服務已啟動並在背景運行"
+            }
+        }
     }
-    post{
-        always{
-            echo 'always say goodbay'
+    
+    post {
+        success {
+            echo "Pipeline執行成功，前端和後端服務已啟動"
+        }
+        failure {
+            echo "Pipeline執行失敗，請檢查日誌"
         }
     }
 }
