@@ -11,7 +11,7 @@ pipeline{
                 echo 'run test'
                 withEnv(['JENKINS_NODE_COOKIE=dontKillMe']) {
                     //bat "start /B C:/gittest/test/Application/KeyboardWarIII.exe"
-                    bat "start /B C:/gittest/LAB2/Robotiive_runner.exe SEP firstTask"
+                    bat "start /B C:/gittest/test/LAB2/Robotiive_runner.exe SEP firstTask"
                 }
                 //bat "start /B C:/final/Application/KeyboardWarIII.exe"
             }
